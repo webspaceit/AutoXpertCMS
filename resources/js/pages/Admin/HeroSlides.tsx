@@ -376,7 +376,23 @@ export default function HeroSlides({ slides = [] }: Props) {
                                     {errors.subtitle_en && <p className="text-xs text-rose-500 mt-1">{errors.subtitle_en}</p>}
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold mb-1.5">Subtitle (Bengali)</label>
+                                    <div className="flex items-center justify-between mb-1.5">
+                                        <label className="block text-xs font-semibold">Subtitle (Bengali)</label>
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                try {
+                                                    const res = await translateText(data.subtitle_en);
+                                                    setData('subtitle_bn', res);
+                                                } catch {
+                                                    alert('Translation failed.');
+                                                }
+                                            }}
+                                            className="text-[10px] font-bold text-rose-500 hover:text-rose-600 transition"
+                                        >
+                                            Auto-Translate
+                                        </button>
+                                    </div>
                                     <textarea
                                         rows={3}
                                         value={data.subtitle_bn}
@@ -400,7 +416,23 @@ export default function HeroSlides({ slides = [] }: Props) {
                                     {errors.button_text_en && <p className="text-xs text-rose-500 mt-1">{errors.button_text_en}</p>}
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold mb-1.5">Button Text (Bengali)</label>
+                                    <div className="flex items-center justify-between mb-1.5">
+                                        <label className="block text-xs font-semibold">Button Text (Bengali)</label>
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                try {
+                                                    const res = await translateText(data.button_text_en);
+                                                    setData('button_text_bn', res);
+                                                } catch {
+                                                    alert('Translation failed.');
+                                                }
+                                            }}
+                                            className="text-[10px] font-bold text-rose-500 hover:text-rose-600 transition"
+                                        >
+                                            Auto-Translate
+                                        </button>
+                                    </div>
                                     <input
                                         type="text"
                                         value={data.button_text_bn}
