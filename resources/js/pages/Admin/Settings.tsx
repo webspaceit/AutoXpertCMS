@@ -103,7 +103,47 @@ export default function Settings({ settings }: Props) {
                         <div className="space-y-4">
                             <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">Hero Section Content</h3>
 
-                            {/* Logo Upload */}
+                            {/* Hero Display Mode */}
+                            <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+                                <label className="block text-xs font-semibold mb-3 text-slate-600 dark:text-slate-400">Hero Display Mode</label>
+                                <div className="flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setData('hero_mode', 'static')}
+                                        className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-semibold transition ${data.hero_mode === 'static' ? 'border-rose-500 bg-rose-50 text-rose-600 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'}`}
+                                    >
+                                        Static (Text only)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setData('hero_mode', 'slider')}
+                                        className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-semibold transition ${data.hero_mode === 'slider' ? 'border-rose-500 bg-rose-50 text-rose-600 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'}`}
+                                    >
+                                        Image Slider
+                                    </button>
+                                </div>
+                                {data.hero_mode === 'slider' && (
+                                    <div className="mt-3">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Slide Interval (seconds)</label>
+                                            <span className="text-xs font-bold text-rose-500">{data.hero_interval}s</span>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min={2}
+                                            max={15}
+                                            step={1}
+                                            value={data.hero_interval}
+                                            onChange={(e) => setData('hero_interval', e.target.value)}
+                                            className="w-full accent-rose-500 cursor-pointer"
+                                        />
+                                        <div className="flex justify-between text-[10px] text-slate-400 mt-1 select-none">
+                                            <span>2s</span><span>5s</span><span>10s</span><span>15s</span>
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 mt-2">Manage slides at <a href="/dashboard/hero-slides" className="text-rose-500 hover:underline">Hero Slides →</a></p>
+                                    </div>
+                                )}
+                            </div>
                             <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4">
                                 <label className="block text-xs font-semibold mb-2 text-slate-600 dark:text-slate-400">Site Logo</label>
                                 {settings.logo && (

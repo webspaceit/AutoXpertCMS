@@ -47,6 +47,11 @@ class HeroSlideController extends Controller
             'order' => 'required|integer|min:0',
         ]);
 
+        // If the image is being replaced, delete the old file from disk
+        if ($heroSlide->image !== $validated['image']) {
+            $this->deleteImageFile($heroSlide->image);
+        }
+
         $heroSlide->update($validated);
 
         return redirect()->back()->with('success', 'Hero slide updated successfully.');
@@ -54,9 +59,24 @@ class HeroSlideController extends Controller
 
     public function destroy(HeroSlide $heroSlide)
     {
+        // Delete the physical image file from the server
+        $this->deleteImageFile($heroSlide->image);
+
         $heroSlide->delete();
 
         return redirect()->back()->with('success', 'Hero slide deleted successfully.');
+    }
+
+    /**
+     * Delete only the image file for a slide (keeps the slide record).
+     */
+    public function destroyImage(HeroSlide $heroSlide)
+    {
+        $this->deleteImageFile($heroSlide->image);
+
+        $heroSlide->update(['image' => '']);
+
+        return redirect()->back()->with('success', 'Image deleted from server.');
     }
 
     public function reorder(Request $request)
@@ -72,5 +92,23 @@ class HeroSlideController extends Controller
         }
 
         return redirect()->back()->with('success', 'Hero slides reordered successfully.');
+    }
+
+    /**
+     * Delete the physical image file from the server.
+     * Handles both /uploads/content-images/ and storage/ paths.
+     */
+    private function deleteImageFile(string $imagePath): void
+    {
+        if (empty($imagePath)) return;
+
+        // Strip leading slash
+        $relativePath = ltrim($imagePath, '/');
+
+        $fullPath = public_path($relativePath);
+
+        if (file_exists($fullPath)) {
+            unlink($fullPath);
+        }
     }
 }

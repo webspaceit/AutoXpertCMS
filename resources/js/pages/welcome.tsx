@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useTranslation } from '@/hooks/use-translation';
 import { toBengaliDigits } from '@/utils/translate';
@@ -20,6 +20,18 @@ import {
     Loader2,
     X
 } from 'lucide-react';
+
+interface HeroSlide {
+    id: number;
+    image: string;
+    title_en: string;
+    title_bn: string;
+    subtitle_en: string | null;
+    subtitle_bn: string | null;
+    button_text_en: string | null;
+    button_text_bn: string | null;
+    order: number;
+}
 
 interface Service {
     id: number;
@@ -718,151 +730,151 @@ export default function Welcome({ services = [], testimonials = [], auth, menus 
                             <X className="h-5 w-5" />
                         </button>
                         <div className="max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-slate-950 p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{t('booking.title')}</h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">{t('booking.subtitle')}</p>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{t('booking.title')}</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">{t('booking.subtitle')}</p>
 
-                        <form onSubmit={submitBooking} className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.name')}</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={data.customer_name}
-                                    onChange={(e) => setData('customer_name', e.target.value)}
-                                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                                />
-                                {errors.customer_name && <p className="text-xs text-rose-500 mt-1">{errors.customer_name}</p>}
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
+                            <form onSubmit={submitBooking} className="space-y-4">
                                 <div>
-                                    <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.email')}</label>
-                                    <input
-                                        type="email"
-                                        required
-                                        value={data.customer_email}
-                                        onChange={(e) => setData('customer_email', e.target.value)}
-                                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                                    />
-                                    {errors.customer_email && <p className="text-xs text-rose-500 mt-1">{errors.customer_email}</p>}
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.phone')}</label>
-                                    <input
-                                        type="tel"
-                                        required
-                                        value={data.customer_phone}
-                                        onChange={(e) => setData('customer_phone', e.target.value)}
-                                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                                    />
-                                    {errors.customer_phone && <p className="text-xs text-rose-500 mt-1">{errors.customer_phone}</p>}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.car_make')}</label>
+                                    <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.name')}</label>
                                     <input
                                         type="text"
                                         required
-                                        placeholder="e.g. Toyota"
-                                        value={data.car_make}
-                                        onChange={(e) => setData('car_make', e.target.value)}
+                                        value={data.customer_name}
+                                        onChange={(e) => setData('customer_name', e.target.value)}
                                         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                                     />
-                                    {errors.car_make && <p className="text-xs text-rose-500 mt-1">{errors.car_make}</p>}
+                                    {errors.customer_name && <p className="text-xs text-rose-500 mt-1">{errors.customer_name}</p>}
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.car_model')}</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="e.g. Corolla"
-                                        value={data.car_model}
-                                        onChange={(e) => setData('car_model', e.target.value)}
-                                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                                    />
-                                    {errors.car_model && <p className="text-xs text-rose-500 mt-1">{errors.car_model}</p>}
-                                </div>
-                            </div>
 
-                            <div>
-                                <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.service')}</label>
-                                <select
-                                    required
-                                    value={data.service_id}
-                                    onChange={(e) => setData('service_id', Number(e.target.value))}
-                                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                                >
-                                    <option value="" disabled>{t('booking.service')}</option>
-                                    {services.map((service) => (
-                                        <option key={service.id} value={service.id}>
-                                            {locale === 'bn' ? service.name_bn : service.name_en} - ৳{locale === 'bn' ? toBengaliDigits(service.price) : parseFloat(service.price.toString()).toLocaleString()}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.service_id && <p className="text-xs text-rose-500 mt-1">{errors.service_id}</p>}
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.date')}</label>
-                                    <input
-                                        type="date"
-                                        required
-                                        value={data.booking_date}
-                                        onChange={(e) => setData('booking_date', e.target.value)}
-                                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                                    />
-                                    {errors.booking_date && <p className="text-xs text-rose-500 mt-1">{errors.booking_date}</p>}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.email')}</label>
+                                        <input
+                                            type="email"
+                                            required
+                                            value={data.customer_email}
+                                            onChange={(e) => setData('customer_email', e.target.value)}
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        />
+                                        {errors.customer_email && <p className="text-xs text-rose-500 mt-1">{errors.customer_email}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.phone')}</label>
+                                        <input
+                                            type="tel"
+                                            required
+                                            value={data.customer_phone}
+                                            onChange={(e) => setData('customer_phone', e.target.value)}
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        />
+                                        {errors.customer_phone && <p className="text-xs text-rose-500 mt-1">{errors.customer_phone}</p>}
+                                    </div>
                                 </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.car_make')}</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            placeholder="e.g. Toyota"
+                                            value={data.car_make}
+                                            onChange={(e) => setData('car_make', e.target.value)}
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        />
+                                        {errors.car_make && <p className="text-xs text-rose-500 mt-1">{errors.car_make}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.car_model')}</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            placeholder="e.g. Corolla"
+                                            value={data.car_model}
+                                            onChange={(e) => setData('car_model', e.target.value)}
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        />
+                                        {errors.car_model && <p className="text-xs text-rose-500 mt-1">{errors.car_model}</p>}
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.time')}</label>
+                                    <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.service')}</label>
                                     <select
                                         required
-                                        value={data.booking_time}
-                                        onChange={(e) => setData('booking_time', e.target.value)}
+                                        value={data.service_id}
+                                        onChange={(e) => setData('service_id', Number(e.target.value))}
                                         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                                     >
-                                        <option value="" disabled>{t('booking.time')}</option>
-                                        <option value="09:00 AM - 11:00 AM">09:00 AM - 11:00 AM</option>
-                                        <option value="11:00 AM - 01:00 PM">11:00 AM - 01:00 PM</option>
-                                        <option value="02:00 PM - 04:00 PM">02:00 PM - 04:00 PM</option>
-                                        <option value="04:00 PM - 06:00 PM">04:00 PM - 06:00 PM</option>
+                                        <option value="" disabled>{t('booking.service')}</option>
+                                        {services.map((service) => (
+                                            <option key={service.id} value={service.id}>
+                                                {locale === 'bn' ? service.name_bn : service.name_en} - ৳{locale === 'bn' ? toBengaliDigits(service.price) : parseFloat(service.price.toString()).toLocaleString()}
+                                            </option>
+                                        ))}
                                     </select>
-                                    {errors.booking_time && <p className="text-xs text-rose-500 mt-1">{errors.booking_time}</p>}
+                                    {errors.service_id && <p className="text-xs text-rose-500 mt-1">{errors.service_id}</p>}
                                 </div>
-                            </div>
 
-                            <div>
-                                <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.notes')}</label>
-                                <textarea
-                                    rows={2}
-                                    value={data.notes}
-                                    onChange={(e) => setData('notes', e.target.value)}
-                                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white resize-none"
-                                />
-                                {errors.notes && <p className="text-xs text-rose-500 mt-1">{errors.notes}</p>}
-                            </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.date')}</label>
+                                        <input
+                                            type="date"
+                                            required
+                                            value={data.booking_date}
+                                            onChange={(e) => setData('booking_date', e.target.value)}
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        />
+                                        {errors.booking_date && <p className="text-xs text-rose-500 mt-1">{errors.booking_date}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.time')}</label>
+                                        <select
+                                            required
+                                            value={data.booking_time}
+                                            onChange={(e) => setData('booking_time', e.target.value)}
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        >
+                                            <option value="" disabled>{t('booking.time')}</option>
+                                            <option value="09:00 AM - 11:00 AM">09:00 AM - 11:00 AM</option>
+                                            <option value="11:00 AM - 01:00 PM">11:00 AM - 01:00 PM</option>
+                                            <option value="02:00 PM - 04:00 PM">02:00 PM - 04:00 PM</option>
+                                            <option value="04:00 PM - 06:00 PM">04:00 PM - 06:00 PM</option>
+                                        </select>
+                                        {errors.booking_time && <p className="text-xs text-rose-500 mt-1">{errors.booking_time}</p>}
+                                    </div>
+                                </div>
 
-                            <div className="flex justify-end gap-3 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsBookingOpen(false)}
-                                    className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="flex items-center gap-1.5 rounded-lg bg-rose-500 px-5 py-2 text-sm font-semibold text-white hover:bg-rose-600 transition disabled:bg-rose-400"
-                                >
-                                    {processing && <Loader2 className="h-4 w-4 animate-spin" />}
-                                    <span>{processing ? t('booking.submitting') : t('booking.submit')}</span>
-                                </button>
-                            </div>
-                        </form>
+                                <div>
+                                    <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">{t('booking.notes')}</label>
+                                    <textarea
+                                        rows={2}
+                                        value={data.notes}
+                                        onChange={(e) => setData('notes', e.target.value)}
+                                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white resize-none"
+                                    />
+                                    {errors.notes && <p className="text-xs text-rose-500 mt-1">{errors.notes}</p>}
+                                </div>
+
+                                <div className="flex justify-end gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsBookingOpen(false)}
+                                        className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="flex items-center gap-1.5 rounded-lg bg-rose-500 px-5 py-2 text-sm font-semibold text-white hover:bg-rose-600 transition disabled:bg-rose-400"
+                                    >
+                                        {processing && <Loader2 className="h-4 w-4 animate-spin" />}
+                                        <span>{processing ? t('booking.submitting') : t('booking.submit')}</span>
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

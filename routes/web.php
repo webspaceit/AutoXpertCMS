@@ -71,6 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/dashboard/hero-slides/reorder', [HeroSlideController::class, 'reorder'])->name('admin.hero-slides.reorder');
     Route::put('/dashboard/hero-slides/{heroSlide}', [HeroSlideController::class, 'update'])->name('admin.hero-slides.update');
     Route::delete('/dashboard/hero-slides/{heroSlide}', [HeroSlideController::class, 'destroy'])->name('admin.hero-slides.destroy');
+    Route::delete('/dashboard/hero-slides/{heroSlide}/image', [HeroSlideController::class, 'destroyImage'])->name('admin.hero-slides.destroy-image');
 });
 
 require __DIR__.'/settings.php';

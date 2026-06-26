@@ -100,6 +100,18 @@ export default function HeroSlides({ slides = [] }: Props) {
         }
     };
 
+    const handleDeleteImage = (id: number) => {
+        if (confirm('Delete this image from the server? The slide record will be kept.')) {
+            destroy(`/dashboard/hero-slides/${id}/image`, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setImagePreview('');
+                    setData('image', '');
+                },
+            });
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const options = {
@@ -211,11 +223,22 @@ export default function HeroSlides({ slides = [] }: Props) {
                                             {slide.order}
                                         </td>
                                         <td className="p-4">
-                                            <img
-                                                src={slide.image}
-                                                alt={slide.title_en}
-                                                className="h-12 w-20 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
-                                            />
+                                            <div className="flex items-center gap-2">
+                                                <img
+                                                    src={slide.image}
+                                                    alt={slide.title_en}
+                                                    className="h-12 w-20 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
+                                                />
+                                                {slide.image && (
+                                                    <button
+                                                        onClick={() => handleDeleteImage(slide.id)}
+                                                        className="p-1 rounded text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition"
+                                                        title="Delete image from server"
+                                                    >
+                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="p-4 font-semibold text-slate-900 dark:text-white max-w-[200px] truncate">
                                             {slide.title_en}
@@ -268,13 +291,24 @@ export default function HeroSlides({ slides = [] }: Props) {
                                 {imagePreview ? (
                                     <div className="flex items-center gap-3 mb-2">
                                         <img src={imagePreview} alt="Preview" className="h-24 w-40 object-cover rounded-lg border border-slate-200 dark:border-slate-700" />
-                                        <button
-                                            type="button"
-                                            onClick={uploadImage}
-                                            className="text-xs font-semibold text-rose-500 hover:text-rose-600 transition"
-                                        >
-                                            Replace
-                                        </button>
+                                        <div className="flex flex-col gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={uploadImage}
+                                                className="text-xs font-semibold text-rose-500 hover:text-rose-600 transition"
+                                            >
+                                                Replace
+                                            </button>
+                                            {editId && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteImage(editId)}
+                                                    className="flex items-center gap-1 text-xs font-semibold text-slate-400 hover:text-rose-500 transition"
+                                                >
+                                                    <Trash2 className="h-3 w-3" /> Delete from server
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ) : (
                                     <button
