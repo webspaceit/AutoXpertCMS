@@ -37,6 +37,15 @@ class SettingController extends Controller
             'footer_copyright' => 'nullable|string|max:500',
             'hero_mode' => 'nullable|in:static,slider',
             'hero_interval' => 'nullable|integer|min:2|max:15',
+            // Mail settings
+            'mail_host'         => 'nullable|string|max:255',
+            'mail_port'         => 'nullable|integer',
+            'mail_username'     => 'nullable|string|max:255',
+            'mail_password'     => 'nullable|string|max:255',
+            'mail_encryption'   => 'nullable|in:tls,ssl,starttls,',
+            'mail_from_address' => 'nullable|email|max:255',
+            'mail_from_name'    => 'nullable|string|max:255',
+            'mail_admin_email'  => 'nullable|email|max:255',
         ];
 
         $typographyFields = ['hero_title_en', 'hero_title_bn', 'hero_badge_en', 'hero_badge_bn', 'hero_subtitle_en', 'hero_subtitle_bn', 'contact_address_en', 'contact_address_bn', 'contact_phone', 'contact_email', 'contact_hours_en', 'contact_hours_bn', 'menu_label_en', 'menu_label_bn', 'footer_copyright'];

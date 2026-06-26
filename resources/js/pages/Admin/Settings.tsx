@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function Settings({ settings }: Props) {
-    const [activeTab, setActiveTab] = useState<'hero' | 'contact'>('hero');
+    const [activeTab, setActiveTab] = useState<'hero' | 'contact' | 'email'>('hero');
 
     const typographyDefaults = (prefix: string) => ({
         [`${prefix}_font_family`]: settings[`${prefix}_font_family`] || '',
@@ -53,7 +53,14 @@ export default function Settings({ settings }: Props) {
         map_zoom: settings.map_zoom || '15',
         hero_mode: settings.hero_mode || 'static',
         hero_interval: settings.hero_interval || '5',
-
+        mail_host: settings.mail_host || '',
+        mail_port: settings.mail_port || '587',
+        mail_username: settings.mail_username || '',
+        mail_password: settings.mail_password || '',
+        mail_encryption: settings.mail_encryption || 'tls',
+        mail_from_address: settings.mail_from_address || '',
+        mail_from_name: settings.mail_from_name || '',
+        mail_admin_email: settings.mail_admin_email || '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -94,7 +101,16 @@ export default function Settings({ settings }: Props) {
                     <Phone className="h-4 w-4" />
                     <span>Contact & Hours</span>
                 </button>
-
+                <button
+                    onClick={() => setActiveTab('email')}
+                    className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition ${activeTab === 'email'
+                        ? 'border-rose-500 text-rose-600'
+                        : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                        }`}
+                >
+                    <Mail className="h-4 w-4" />
+                    <span>Email</span>
+                </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -620,6 +636,134 @@ export default function Settings({ settings }: Props) {
                                     />
                                     {errors.contact_hours_bn && <p className="text-xs text-rose-500 mt-1">{errors.contact_hours_bn}</p>}
                                 </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'email' && (
+                        <div className="space-y-4">
+                            <div>
+                                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Email / SMTP Settings</h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">These settings are used to send booking confirmation emails to customers and notifications to admin. Supports Gmail, SMTP2GO, Mailgun, etc.</p>
+                            </div>
+
+                            {/* SMTP Server */}
+                            <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 space-y-4">
+                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">SMTP Server</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="md:col-span-2">
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">SMTP Host</label>
+                                        <input
+                                            type="text"
+                                            value={data.mail_host}
+                                            onChange={(e) => setData('mail_host', e.target.value)}
+                                            placeholder="smtp.gmail.com"
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                                        />
+                                        {errors.mail_host && <p className="text-xs text-rose-500 mt-1">{errors.mail_host}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">Port</label>
+                                        <input
+                                            type="number"
+                                            value={data.mail_port}
+                                            onChange={(e) => setData('mail_port', e.target.value)}
+                                            placeholder="587"
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                                        />
+                                        {errors.mail_port && <p className="text-xs text-rose-500 mt-1">{errors.mail_port}</p>}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">Username</label>
+                                        <input
+                                            type="text"
+                                            value={data.mail_username}
+                                            onChange={(e) => setData('mail_username', e.target.value)}
+                                            placeholder="you@gmail.com"
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                                        />
+                                        {errors.mail_username && <p className="text-xs text-rose-500 mt-1">{errors.mail_username}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">Password / App Password</label>
+                                        <input
+                                            type="password"
+                                            value={data.mail_password}
+                                            onChange={(e) => setData('mail_password', e.target.value)}
+                                            placeholder="••••••••••••"
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                                        />
+                                        {errors.mail_password && <p className="text-xs text-rose-500 mt-1">{errors.mail_password}</p>}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">Encryption</label>
+                                    <div className="flex gap-2">
+                                        {['tls', 'ssl', 'starttls', ''].map((enc) => (
+                                            <button
+                                                key={enc}
+                                                type="button"
+                                                onClick={() => setData('mail_encryption', enc)}
+                                                className={`px-4 py-1.5 rounded-lg border text-xs font-semibold transition ${data.mail_encryption === enc ? 'border-rose-500 bg-rose-50 text-rose-600 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'}`}
+                                            >
+                                                {enc === '' ? 'None' : enc.toUpperCase()}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Sender & Recipient */}
+                            <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 space-y-4">
+                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">Sender & Recipient</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400 flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> From Address</label>
+                                        <input
+                                            type="email"
+                                            value={data.mail_from_address}
+                                            onChange={(e) => setData('mail_from_address', e.target.value)}
+                                            placeholder="noreply@autoxperts.com"
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                                        />
+                                        {errors.mail_from_address && <p className="text-xs text-rose-500 mt-1">{errors.mail_from_address}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400">From Name</label>
+                                        <input
+                                            type="text"
+                                            value={data.mail_from_name}
+                                            onChange={(e) => setData('mail_from_name', e.target.value)}
+                                            placeholder="Auto Xperts"
+                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                                        />
+                                        {errors.mail_from_name && <p className="text-xs text-rose-500 mt-1">{errors.mail_from_name}</p>}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold mb-1.5 text-slate-600 dark:text-slate-400 flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> Admin Notification Email</label>
+                                    <input
+                                        type="email"
+                                        value={data.mail_admin_email}
+                                        onChange={(e) => setData('mail_admin_email', e.target.value)}
+                                        placeholder="admin@autoxperts.com"
+                                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                                    />
+                                    <p className="text-[10px] text-slate-400 mt-1">New booking notifications will be sent to this address.</p>
+                                    {errors.mail_admin_email && <p className="text-xs text-rose-500 mt-1">{errors.mail_admin_email}</p>}
+                                </div>
+                            </div>
+
+                            {/* Quick guide */}
+                            <div className="rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 text-xs text-slate-500 space-y-1">
+                                <p className="font-semibold text-slate-700 dark:text-slate-300">Common SMTP settings:</p>
+                                <p>Gmail: host <span className="font-mono text-rose-500">smtp.gmail.com</span>, port <span className="font-mono text-rose-500">587</span>, TLS — use an App Password</p>
+                                <p>SMTP2GO: host <span className="font-mono text-rose-500">mail.smtp2go.com</span>, port <span className="font-mono text-rose-500">587</span>, TLS</p>
+                                <p>Mailgun: host <span className="font-mono text-rose-500">smtp.mailgun.org</span>, port <span className="font-mono text-rose-500">587</span>, TLS</p>
                             </div>
                         </div>
                     )}
